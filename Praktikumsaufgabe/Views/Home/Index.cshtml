@@ -1,0 +1,118 @@
+﻿@using Praktikumsaufgabe
+@using Praktikumsaufgabe.ViewModels
+@model AddressWithCommunication
+@{
+    ViewData["Title"] = "Home Page";
+    Communication c = new Communication();
+}
+
+@if (Model == null || Model.address == null)
+{
+    <form asp-controller="Home" asp-action="Index" method="post" enctype="multipart/form-data">
+        <div class="py-5 text-center">
+
+            <h2> Kommunikationsdaten des Schuldners</h2>
+            <p class="lead">Suche mit ReferenceCode z. B. 1402-000001</p>
+
+            <div class="col-12">
+                <input type="text" class="form-control" name="id">
+            </div>
+            <br />
+            <button class="w-75 btn btn-primary btn-lg" type="submit">Suche</button>
+        </div>
+    </form>
+}
+else
+{
+    <dl class="row">
+        <dt class="col-sm-3">Rechtsform</dt>
+        <dd class="col-sm-9">@Model.address.LegalEntityForm</dd>
+
+        <dt class="col-sm-3">Name</dt>
+        <dd class="col-sm-9">
+            @Model.address.Salutation
+            @Model.address.Title
+            @Model.address.Firstname @Model.address.Lastname
+        </dd>
+
+        <dt class="col-sm-3">Straße</dt>
+        <dd class="col-sm-9">@Model.address.Street @Model.address.Housenumber</dd>
+
+        <dt class="col-sm-3 text-truncate">Ort</dt>
+        <dd class="col-sm-9">@Model.address.ZIP @Model.address.City</dd>
+
+        <dt class="col-sm-3 text-truncate">Gespeichert am</dt>
+        <dd class="col-sm-9">@Model.address.ImportDate.ToShortDateString()</dd>
+    </dl>
+}
+
+
+
+@if (Model != null && Model.communications != null)
+{
+    <div class="py-5 text-center">
+
+        <a asp-action="Create" class="w-75 btn btn-primary btn-sm" asp-route-id="@Model.address.FileID">Add New Communication</a>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+
+                <th>
+
+                </th>
+                <th>
+
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => c.ComAddress)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => c.Memo)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => c.ImportDate)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (Communication comm in Model.communications)
+            {
+                string statusIcon = Praktikumsaufgabe.Common.Functions.GetComStatusIcons(comm.ComStatus);
+                string typeIcon = Praktikumsaufgabe.Common.Functions.GetComTypeIcons(comm.ComType);
+                <tr>
+
+                    <td>
+                        <img src="~/lib/icons/@statusIcon" />
+                    </td>
+                    <td>
+                        <img src="~/lib/icons/@typeIcon" />
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => comm.ComAddress)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => comm.Memo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => comm.ImportDate)
+                    </td>
+                    <td>
+
+                        <form asp-controller="Home" asp-action="Delete" enctype="/form-data" method="post">
+                            <input name="id" value="@comm.CommID" class="form-control" type="hidden" />
+                            <a asp-action="Edit" asp-route-id="@comm.CommID"> <img src="~/lib/icons/edit.png" /></a>
+
+                            <a href="#" onclick="if (confirm('Are you sure you want to delete this item?')){this.parentNode.submit(); return true;}"> <img src="~/lib/icons/delete.png" /></a>
+
+                        </form>
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+}

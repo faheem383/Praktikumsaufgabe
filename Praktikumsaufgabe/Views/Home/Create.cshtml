@@ -1,0 +1,13 @@
+﻿@model Praktikumsaufgabe.ViewModels.CommunicationViewModel
+
+@{
+    ViewData["Title"] = "Save";
+}
+
+<h1>Save</h1>
+  @{await Html.RenderPartialAsync("_SaveCommunicationPartial",Model,ViewData);}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
